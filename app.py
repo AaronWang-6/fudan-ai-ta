@@ -15,37 +15,65 @@ PRIVATE_API_BASE = st.secrets.get("API_BASE")
 EXPIRE_DATE = datetime.date(2026, 5, 28)
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（浅蓝渐变与气泡淡入动效） ---
+# --- 核心资源链接定义 ---
 # =========================================================
-st.set_page_config(page_title="物理学系科研启航小助手", page_icon="⚛️", layout="centered")
+GITHUB_LESSON_PLAN_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E6%95%99%E6%A1%88.docx"
+GITHUB_SPEECH_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E8%AE%B2%E7%A8%BF.docx"
 
-# 通过 CSS 深度定制视觉交互，保留气泡平滑上升淡入，背景为纯净渐变色
-st.markdown("""
+# 动态机器人 GIF 路径与网页标签静态图片 PNG 路径
+ROBOT_GIF_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.gif?raw=true"
+ROBOT_PNG_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.png?raw=true"
+
+# =========================================================
+# --- 页面基本配置与高级 UI 定制（放大头像与修改标签图标） ---
+# =========================================================
+# 【关键修改】将原本的 ⚛️ 替换为你指定的 robot.png 公开直链
+st.set_page_config(page_title="物理学系科研启航小助手", page_icon=ROBOT_PNG_URL, layout="centered")
+
+# 通过 CSS 强行注入，重写 Streamlit 底层头像的大小限制
+st.markdown(f"""
     <style>
     /* 全局浅蓝色渐变静止背景 */
-    .stApp {
+    .stApp {{
         background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
-    }
+    }}
     
     /* 聊天对话框容器自定义平滑淡入并向上飘入动画 */
-    .stChatMessage {
+    .stChatMessage {{
         background-color: transparent !important;
         animation: bubbleFadeUp 0.4s ease-out forwards;
-    }
+    }}
     
-    @keyframes bubbleFadeUp {
-        from {
+    @keyframes bubbleFadeUp {{
+        from {{
             opacity: 0;
             transform: translateY(12px);
-        }
-        to {
+        }}
+        to {{
             opacity: 1;
             transform: translateY(0);
-        }
-    }
+        }}
+    }}
+    
+    /* 核心重写：突破默认限制，将对话框头像放大 2 倍并修正边距 */
+    div[data-testid="stChatMessageAvatar"] {{
+        width: 64px !important;
+        height: 64px !important;
+    }}
+    div[data-testid="stChatMessageAvatar"] img, 
+    div[data-testid="stChatMessageAvatar"] div {{
+        width: 64px !important;
+        height: 64px !important;
+        font-size: 32px !important; /* 顺便放大用户原生的帽子符号大小 */
+    }}
+    
+    /* 适当拉开左侧头像与右侧对话框的间距，防止重叠 */
+    div[data-testid="stChatMessageContent"] {{
+        margin-left: 10px !important;
+    }}
     
     /* 隐藏不必要的 Streamlit 默认页脚 */
-    footer {visibility: hidden;}
+    footer {{visibility: hidden;}}
     </style>
     """, unsafe_allow_html=True)
 
@@ -67,12 +95,6 @@ current_date = datetime.date.today()
 if current_date > EXPIRE_DATE:
     st.error("⏳ 抱歉，该思政 AI 助教的本次班会服务时间已截止（过期失效）。如需重新开启，请联系负责老师。")
     st.stop()
-
-# --- 核心数据自动加载 ---
-GITHUB_LESSON_PLAN_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E6%95%99%E6%A1%88.docx"
-GITHUB_SPEECH_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E8%AE%B2%E7%A8%BF.docx"
-# 定义你的 GitHub 动态机器人 GIF 路径
-ROBOT_GIF_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.gif?raw=true"
 
 lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
 speech_content = fetch_and_extract_docx(GITHUB_SPEECH_URL)
@@ -138,7 +160,7 @@ SYSTEM_PROMPT = f"""
 3. 加快实现高水平科技自立自强，是推动高质量发展的必由之路。在激烈的国际竞争中，我们要开辟发展新领域新赛道、塑造发展新动能新优势，从根本上说，还是要依靠科技创新——2024 年 3 月 5 日，习近平总书记参加十四届全国人大二次会议江苏代表团审议时的重要讲话
 4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
-6. 教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
+6. 教育、科技、人保留是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
 7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四届全国人大三次会议江苏代表团审议时的重要讲话
 8. 习近平总书记在二十届中央政治局第三次集体学习时强调：“加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路。”
 =========================================
@@ -150,7 +172,6 @@ for message in st.session_state.messages:
         with st.chat_message("user", avatar="🎓"):
             st.markdown(f'<div style="background-color:#1e3a8a; color:white; padding:12px; border-radius:12px;">{message["content"]}</div>', unsafe_allow_html=True)
     else:
-        # 【关键改动】将助教历史记录的静态头像替换为你的机器人 GIF 直链
         with st.chat_message("assistant", avatar=ROBOT_GIF_URL):
             st.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{message["content"]}</div>', unsafe_allow_html=True)
 
@@ -165,7 +186,6 @@ if user_input:
     try:
         client = OpenAI(api_key=PRIVATE_API_KEY, base_url=PRIVATE_API_BASE)
         
-        # 【关键改动】将实时对话生成时助教的头像也替换为机器人 GIF 直链
         with st.chat_message("assistant", avatar=ROBOT_GIF_URL):
             response_placeholder = st.empty()
             full_response = ""
