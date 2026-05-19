@@ -25,59 +25,66 @@ ROBOT_GIF_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.gif?
 ROBOT_PNG_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.png?raw=true"
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（最强 CSS 穿透头像放大） ---
+# --- 页面基本配置与高级 UI 定制（穿透壳层强放头像与更换标签） ---
 # =========================================================
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon=ROBOT_PNG_URL, layout="centered")
 
-# 终极强行修改：直接抓取聊天框内所有的圆形/方形头像，强制撑大两倍
+# 通过纯文本 CSS 深度定制视觉交互，严防 f-string 语法冲突
 st.markdown("""
     <style>
     /* 全局浅蓝色渐变静止背景 */
-    .stApp {{
+    .stApp {
         background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
-    }}
+    }
     
     /* 聊天对话框容器自定义平滑淡入并向上飘入动画 */
-    .stChatMessage {{
+    .stChatMessage {
         background-color: transparent !important;
         animation: bubbleFadeUp 0.4s ease-out forwards;
-    }}
+    }
     
-    @keyframes bubbleFadeUp {{
-        from {{
+    @keyframes bubbleFadeUp {
+        from {
             opacity: 0;
             transform: translateY(12px);
-        }}
-        to {{
+        }
+        to {
             opacity: 1;
             transform: translateY(0);
-        }}
-    }}
+        }
+    }
     
-    /* 🛠️ 【终极强推】无视所有包装层，直接将聊天对话框头像放大至 64px (2倍) */
-    [data-testid="stChatMessage"] [data-testid="stElementContainer"] img,
-    [data-testid="stChatMessage"] svg,
-    [data-testid="stChatMessage"] p {{
+    /* 🎯 【核心修复】解除外壳限制，强行将整个头像骨架及所有子层级撑大至 64px (2倍大) */
+    div[data-testid="stChatMessageAvatar"],
+    div[data-testid="stChatMessageAvatar"] > div,
+    div[data-testid="stChatMessageAvatar"] img {
         width: 64px !important;
         height: 64px !important;
         min-width: 64px !important;
         min-height: 64px !important;
-    }}
-    
-    /* 让用户原生的帽子符号（🎓）在撑大的容器中按比例放大 */
-    [data-testid="stChatMessage"] span {{
-        font-size: 40px !important;
-        line-height: 64px !important;
+        max-width: 64px !important;
+        max-height: 64px !important;
+        border-radius: 50% !important; /* 保持圆形 */
+        object-fit: cover !important;  /* 确保 GIF 等比例填充不缩水 */
     }
     
-    /* 优化间距：拉开左侧大头像和右侧文字对话框的距离，严防重叠 */
-    div[data-testid="stChatMessageContent"] {{
-        margin-left: 18px !important;
-        padding-top: 4px !important;
-    }}
+    /* 让用户原生的帽子符号（🎓）在撑大的大容器中居中并完美放大 */
+    div[data-testid="stChatMessageAvatar"] span {
+        font-size: 40px !important;
+        line-height: 64px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* 优化排版间距：拉开左侧 64px 大头像和右侧文字对话框的距离，严防重叠 */
+    div[data-testid="stChatMessageContent"] {
+        margin-left: 20px !important;
+        padding-top: 8px !important;
+    }
     
     /* 隐藏不必要的 Streamlit 默认页脚 */
-    footer {{visibility: hidden;}}
+    footer {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
@@ -100,11 +107,12 @@ if current_date > EXPIRE_DATE:
     st.error("⏳ 抱歉，该思政 AI 助教的本次班会服务时间已截止（过期失效）。如需重新开启，请联系负责老师。")
     st.stop()
 
+# 静默加载教案、讲稿核心知识库
 lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
 speech_content = fetch_and_extract_docx(GITHUB_SPEECH_URL)
 
 # =========================================================
-# --- 侧边栏控制台还原（纯净干净的模型配置） ---
+# --- 侧边栏控制台（彻底回归最纯净清爽的模型配置区） ---
 # =========================================================
 with st.sidebar:
     st.title("⚛️ 助教控制台")
@@ -137,9 +145,8 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # =========================================================
-# --- 主界面交互布局（标题图标完美替换） ---
+# --- 主界面交互布局（标题图标完美替换为 robot.png） ---
 # =========================================================
-# 【关键优化】通过并排分列组件，将原本的纯文本 ⚛️ 替换为精美的 robot.png 物理图标图片
 col1, col2 = st.columns([0.12, 0.88], vertical_alignment="center")
 with col1:
     st.image(ROBOT_PNG_URL, use_container_width=True)
@@ -173,12 +180,12 @@ SYSTEM_PROMPT = f"""
 4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
 6. 教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
-7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四届全国人大三次会议江苏代表团审议时的重要讲话
+7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四姐全国人大三次会议江苏代表团审议时的重要讲话
 8. 习近平总书记在二十届中央政治局第三次集体学习时强调：“加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路。”
 =========================================
 """
 
-# 渲染历史对话（使用自定义皮肤与专属图标）
+# 渲染历史对话（使用放大后的自定义皮肤与大号专属图标）
 for message in st.session_state.messages:
     if message["role"] == "user":
         with st.chat_message("user", avatar="🎓"):
