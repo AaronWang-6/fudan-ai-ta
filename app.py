@@ -209,7 +209,7 @@ if user_input:
                     <div style="background-color:#bae6fd; color:#0f172a; padding:16px; border-radius:12px; border: 1px solid #7dd3fc;">
                         <div style="margin-bottom: 12px; display: flex; align-items: center;">
                             <img src="{ROBOT_GIF_URL}" style="width:128px; height:128px; border-radius:50%; object-fit:cover; margin-right:12px;">
-                            <span style="font-weight:bold; color:#0384c7; font-size:16px;">AI助教学长正在思考回答...</span>
+                            <span style="font-weight:bold; color:#0384c7; font-size:16px;">AI助教正在思考回答...</span>
                         </div>
                         <div>{full_response}▌</div>
                     </div>
@@ -221,7 +221,7 @@ if user_input:
             <div style="background-color:#bae6fd; color:#0f172a; padding:16px; border-radius:12px; border: 1px solid #7dd3fc;">
                 <div style="margin-bottom: 12px; display: flex; align-items: center;">
                     <img src="{ROBOT_GIF_URL}" style="width:128px; height:128px; border-radius:50%; object-fit:cover; margin-right:12px;">
-                    <span style="font-weight:bold; color:#0384c7; font-size:16px;">AI助教学长：</span>
+                    <span style="font-weight:bold; color:#0384c7; font-size:16px;">AI助教：</span>
                 </div>
                 <div>{full_response}</div>
             </div>
