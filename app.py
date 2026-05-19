@@ -9,7 +9,8 @@ import datetime
 # 【安全防护区】 - 杜绝密钥泄露、控制访问时效
 # =========================================================
 # 1. 密钥防护：通过 st.secrets 读取云端环境变量，本地运行时可在 .streamlit/secrets.toml 中配置
-#    如果在部署时图省事，也可以直接临时写死在这里，但在推送到 GitHub 之前建议清空。
+PRIVATE_API_KEY = st.secrets.get("API_KEY")
+PRIVATE_API_BASE = st.secrets.get("API_BASE")
 
 # 2. 时效控制：设置二维码/网页的过期时间（示例设置为 2026 年 6 月 30 日）
 EXPIRE_DATE = datetime.date(2026, 5, 28)
