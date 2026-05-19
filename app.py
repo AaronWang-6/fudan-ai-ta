@@ -30,7 +30,7 @@ ROBOT_PNG_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.png?
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon=ROBOT_PNG_URL, layout="centered")
 
 # 终极强行修改：直接抓取聊天框内所有的圆形/方形头像，强制撑大两倍
-st.markdown(f"""
+st.markdown("""
     <style>
     /* 全局浅蓝色渐变静止背景 */
     .stApp {{
