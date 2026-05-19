@@ -16,22 +16,50 @@ PRIVATE_API_BASE = st.secrets.get("API_BASE")
 EXPIRE_DATE = datetime.date(2026, 5, 28)
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（融入交互微动画） ---
+# --- 页面基本配置与高级 UI 定制（融入量子动态背景与气泡动效） ---
 # =========================================================
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon="⚛️", layout="centered")
 
-# 通过 CSS 深度定制视觉交互与动态气泡淡入效果
+# 通过高级 CSS 在聊天背景中注入动态流动的物理粒子网络，并保留气泡平滑动效
 st.markdown("""
     <style>
-    /* 全局浅蓝色渐变背景 */
+    /* 全局背景：浅蓝渐变 + 动态物理波形粒子动效 */
     .stApp {
         background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+        position: relative;
+        overflow: hidden;
     }
     
-    /* 聊天对话框容器自定义调色 */
+    /* 使用 CSS 伪元素在背景中生成若隐若现的动态量子晶格流动动画 */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 0;
+        opacity: 0.25; /* 保持透明度，不遮挡文字，若隐若现非常高级 */
+        pointer-events: none;
+        background-image: 
+            radial-gradient(#0284c7 1px, transparent 0),
+            radial-gradient(#22c55e 1px, transparent 0);
+        background-size: 30px 30px;
+        background-position: 0 0, 15px 15px;
+        animation: quantumFloat 20s linear infinite; /* 20秒一轮的微动效果 */
+    }
+    
+    @keyframes quantumFloat {
+        0% { background-position: 0 0, 15px 15px; }
+        100% { background-position: 30px 60px, 45px 75px; }
+    }
+    
+    /* 确保主内容区在背景层之上，可正常交互 */
+    .main .block-container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* 聊天对话框容器自定义平滑淡入并向上飘入动画 */
     .stChatMessage {
         background-color: transparent !important;
-        /* 核心动画：让新蹦出来的聊天框平滑淡入并向上飘入，增强灵动感 */
         animation: bubbleFadeUp 0.4s ease-out forwards;
     }
     
@@ -78,41 +106,13 @@ lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
 speech_content = fetch_and_extract_docx(GITHUB_SPEECH_URL)
 
 # =========================================================
-# --- 侧边栏控制台深度丰富（融入动态机器人助教与状态倒计时） ---
+# --- 侧边栏控制台还原（彻底去掉倒计时和报错机器人，保留干净的模型配置） ---
 # =========================================================
 with st.sidebar:
     st.title("⚛️ 助教控制台")
     st.markdown("---")
     
-    # 🤖 动态机器人助教舱
-    st.subheader("🤖 智能机器人学长")
-    
-    # 利用 Streamlit 官方原生自带的高级 HTML 矢量动画流组件，100%不卡顿地嵌入高清动态机器人
-    # 这个小机器人在前台会一直保持有规律地打字、眨眼、漂浮的极客物理风动画，极大吸引评委眼球！
-    st.components.v1.html(
-        """
-        <iframe src="https://lottie.host/embed/84e4e9b9-d890-4886-90ab-c9b7405be1b8/6rVf6P0R1q.json" 
-                style="width: 100%; height: 180px; border: none; overflow: hidden; background: transparent;">
-        </iframe>
-        """,
-        height=180,
-    )
-    
-    # ⌛ 时效控制监控面板
-    st.subheader("⌛ 系统服务状态")
-    remaining_days = (EXPIRE_DATE - datetime.date.today()).days
-    if remaining_days >= 0:
-        # 进度条渲染：设定安全周期，直观向说课评委展示系统时效控制机制
-        progress_percentage = min(max(remaining_days / 30, 0.0), 1.0)
-        st.progress(progress_percentage)
-        st.caption(f"距离本次班会专属AI服务截止：`{remaining_days}` 天")
-    else:
-        st.error("⏳ 服务期已届满。")
-        
-    st.divider()
-    
-    # ⚙️ 核心模型配置区
-    st.subheader("⚙️ 模型引擎")
+    st.subheader("⚙️ 模型设置")
     model_options = {
         "gpt-4o": "🎨 GPT-4o (OpenAI)",
         "deepseek-v3-0324": "🐋 DeepSeek-V3",
@@ -142,7 +142,7 @@ if "messages" not in st.session_state:
 st.title("⚛️ 物理学系“科研启航”小助手")
 st.markdown("“同学们，在坐热‘冷板凳’的路上，我一直都在。”")
 
-# --- 核心系统提示词（严格遵守守界原则，融合教案与讲稿） ---
+# --- 核心系统提示词（严格遵守守界原则，融合教案与讲稿与总书记讲话） ---
 SYSTEM_PROMPT = f"""
 你是一个名为“科研启航小助手”的AI，专门为复旦大学物理学系《筑基高水平科技自立自强，勇坐基础研究“冷板凳”》主题班会提供服务。
 你的角色是：一位懂物理系学生困境、有同理心、充满鼓励的助教。
@@ -162,9 +162,9 @@ SYSTEM_PROMPT = f"""
 
 【习近平总书记的讲话】：
 1. “基础研究是整个科学体系的源头，是所有技术问题的总机关。要以更大力度、更实举措加强基础研究，提升我国原始创新能力，进一步打牢科技强国建设根基。”——2026年4月30日，习近平总书记在加强基础研究座谈会重要讲话
-2. 青年科技人人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 月 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
+2. 青年科技人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 月 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
 3. 加快实现高水平科技自立自强，是推动高质量发展的必由之路。在激烈的国际竞争中，我们要开辟发展新领域新赛道、塑造发展新动能新优势，从根本上说，还是要依靠科技创新——2024 年 3 月 5 日，习近平总书记参加十四届全国人大二次会议江苏代表团审议时的重要讲话
-4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
+4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平关两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
 6. 教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
 7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四届全国人大三次会议江苏代表团审议时的重要讲话
