@@ -25,7 +25,7 @@ ROBOT_GIF_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.gif?
 ROBOT_PNG_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.png?raw=true"
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（穿透壳层强放头像与更换标签） ---
+# --- 页面基本配置与高级 UI 定制（穿透壳层强放128px头像与更换标签） ---
 # =========================================================
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon=ROBOT_PNG_URL, layout="centered")
 
@@ -54,33 +54,33 @@ st.markdown("""
         }
     }
     
-    /* 🎯 【核心修复】解除外壳限制，强行将整个头像骨架及所有子层级撑大至 64px (2倍大) */
+    /* 🎯 【核心超强放大】解除外壳限制，强行将整个头像骨架及所有底层层级撑大至 128px */
     div[data-testid="stChatMessageAvatar"],
     div[data-testid="stChatMessageAvatar"] > div,
     div[data-testid="stChatMessageAvatar"] img {
-        width: 64px !important;
-        height: 64px !important;
-        min-width: 64px !important;
-        min-height: 64px !important;
-        max-width: 64px !important;
-        max-height: 64px !important;
+        width: 128px !important;
+        height: 128px !important;
+        min-width: 128px !important;
+        min-height: 128px !important;
+        max-width: 128px !important;
+        max-height: 128px !important;
         border-radius: 50% !important; /* 保持圆形 */
         object-fit: cover !important;  /* 确保 GIF 等比例填充不缩水 */
     }
     
-    /* 让用户原生的帽子符号（🎓）在撑大的大容器中居中并完美放大 */
+    /* 让用户原生的帽子符号（🎓）在 128px 的大容器中完美居中并等比例放大 */
     div[data-testid="stChatMessageAvatar"] span {
-        font-size: 40px !important;
-        line-height: 64px !important;
+        font-size: 80px !important;
+        line-height: 128px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
     
-    /* 优化排版间距：拉开左侧 64px 大头像和右侧文字对话框的距离，严防重叠 */
+    /* ⚠️【防重叠修正】头像扩大到 128px 后，大幅增加左侧外边距，并将文字气泡略微下移居中 */
     div[data-testid="stChatMessageContent"] {
-        margin-left: 20px !important;
-        padding-top: 8px !important;
+        margin-left: 35px !important;
+        padding-top: 24px !important;
     }
     
     /* 隐藏不必要的 Streamlit 默认页脚 */
@@ -175,12 +175,12 @@ SYSTEM_PROMPT = f"""
 
 【习近平总书记的讲话】：
 1. “基础研究是整个科学体系的源头，是所有技术问题的总机关。要以更大力度、更实举措加强基础研究，提升我国原始创新能力，进一步打牢科技强国建设根基。”——2026年4月30日，习近平总书记在加强基础研究座谈会重要讲话
-2. 青年科技人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 月 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
+2. 青年科技人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 January 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
 3. 加快实现高水平科技自立自强，是推动高质量发展的必由之路。在激烈的国际竞争中，我们要开辟发展新领域新赛道、塑造发展新动能新优势，从根本上说，还是要依靠科技创新——2024 年 3 月 5 日，习近平总书记参加十四届全国人大二次会议江苏代表团审议时的重要讲话
 4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
 6. 教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
-7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四姐全国人大三次会议江苏代表团审议时的重要讲话
+7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四届全国人大三次会议江苏代表团审议时的重要讲话
 8. 习近平总书记在二十届中央政治局第三次集体学习时强调：“加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路。”
 =========================================
 """
