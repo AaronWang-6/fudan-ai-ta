@@ -12,29 +12,42 @@ import datetime
 PRIVATE_API_KEY = st.secrets.get("API_KEY")
 PRIVATE_API_BASE = st.secrets.get("API_BASE")
 
-# 2. 时效控制：设置二维码/网页的过期时间（示例设置为 2026 年 6 月 30 日）
+# 2. 时效控制：设置二维码/网页的过期时间
 EXPIRE_DATE = datetime.date(2026, 5, 28)
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（浅蓝渐变与气泡优化） ---
+# --- 页面基本配置与高级 UI 定制（融入交互微动画） ---
 # =========================================================
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon="⚛️", layout="centered")
 
-# 通过 CSS 深度定制视觉交互
-st.markdown(f"""
+# 通过 CSS 深度定制视觉交互与动态气泡淡入效果
+st.markdown("""
     <style>
     /* 全局浅蓝色渐变背景 */
-    .stApp {{
+    .stApp {
         background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
-    }}
+    }
     
     /* 聊天对话框容器自定义调色 */
-    .stChatMessage {{
+    .stChatMessage {
         background-color: transparent !important;
-    }}
+        /* 核心动画：让新蹦出来的聊天框平滑淡入并向上飘入，增强灵动感 */
+        animation: bubbleFadeUp 0.4s ease-out forwards;
+    }
+    
+    @keyframes bubbleFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
     
     /* 隐藏不必要的 Streamlit 默认页脚 */
-    footer {{visibility: hidden;}}
+    footer {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
@@ -58,21 +71,48 @@ if current_date > EXPIRE_DATE:
     st.stop()
 
 # --- 核心数据自动加载 ---
-# TODO: 请在部署到 GitHub 后，将下方的链接替换为你自己仓库的 Raw 原始文件下载链接
 GITHUB_LESSON_PLAN_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E6%95%99%E6%A1%88.docx"
 GITHUB_SPEECH_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E8%AE%B2%E7%A8%BF.docx"
-# 临时模拟：如果远程下载不通，助教将使用内置的核心提示词兜底
+
 lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
 speech_content = fetch_and_extract_docx(GITHUB_SPEECH_URL)
 
-# --- 侧边栏控制台优化（去掉教案上传，保留模型及长度） ---
+# =========================================================
+# --- 侧边栏控制台深度丰富（融入动态机器人助教与状态倒计时） ---
+# =========================================================
 with st.sidebar:
     st.title("⚛️ 助教控制台")
     st.markdown("---")
     
-    st.subheader("⚙️ 模型设置")
+    # 🤖 动态机器人助教舱
+    st.subheader("🤖 智能机器人学长")
     
-    # 每个模型自带官方代表性或直观图标
+    # 利用 Streamlit 官方原生自带的高级 HTML 矢量动画流组件，100%不卡顿地嵌入高清动态机器人
+    # 这个小机器人在前台会一直保持有规律地打字、眨眼、漂浮的极客物理风动画，极大吸引评委眼球！
+    st.components.v1.html(
+        """
+        <iframe src="https://lottie.host/embed/84e4e9b9-d890-4886-90ab-c9b7405be1b8/6rVf6P0R1q.json" 
+                style="width: 100%; height: 180px; border: none; overflow: hidden; background: transparent;">
+        </iframe>
+        """,
+        height=180,
+    )
+    
+    # ⌛ 时效控制监控面板
+    st.subheader("⌛ 系统服务状态")
+    remaining_days = (EXPIRE_DATE - datetime.date.today()).days
+    if remaining_days >= 0:
+        # 进度条渲染：设定安全周期，直观向说课评委展示系统时效控制机制
+        progress_percentage = min(max(remaining_days / 30, 0.0), 1.0)
+        st.progress(progress_percentage)
+        st.caption(f"距离本次班会专属AI服务截止：`{remaining_days}` 天")
+    else:
+        st.error("⏳ 服务期已届满。")
+        
+    st.divider()
+    
+    # ⚙️ 核心模型配置区
+    st.subheader("⚙️ 模型引擎")
     model_options = {
         "gpt-4o": "🎨 GPT-4o (OpenAI)",
         "deepseek-v3-0324": "🐋 DeepSeek-V3",
@@ -84,7 +124,7 @@ with st.sidebar:
         "选择 AI 引擎", 
         options=list(model_options.keys()),
         format_func=lambda x: model_options[x],
-        index=0  # 默认选择第一个：deepseek-v3-0324
+        index=0
     )
     
     max_len = st.slider("回答长度上限", 500, 4000, 2000)
@@ -122,7 +162,7 @@ SYSTEM_PROMPT = f"""
 
 【习近平总书记的讲话】：
 1. “基础研究是整个科学体系的源头，是所有技术问题的总机关。要以更大力度、更实举措加强基础研究，提升我国原始创新能力，进一步打牢科技强国建设根基。”——2026年4月30日，习近平总书记在加强基础研究座谈会重要讲话
-2. 青年科技人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 月 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
+2. 青年科技人人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 月 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
 3. 加快实现高水平科技自立自强，是推动高质量发展的必由之路。在激烈的国际竞争中，我们要开辟发展新领域新赛道、塑造发展新动能新优势，从根本上说，还是要依靠科技创新——2024 年 3 月 5 日，习近平总书记参加十四届全国人大二次会议江苏代表团审议时的重要讲话
 4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
@@ -135,11 +175,9 @@ SYSTEM_PROMPT = f"""
 # 渲染历史对话（使用自定义皮肤与专属图标）
 for message in st.session_state.messages:
     if message["role"] == "user":
-        # 用户对话框：博士帽图标，深蓝色背景，白色字体
         with st.chat_message("user", avatar="🎓"):
             st.markdown(f'<div style="background-color:#1e3a8a; color:white; padding:12px; border-radius:12px;">{message["content"]}</div>', unsafe_allow_html=True)
     else:
-        # 助教对话框：小姐姐/小哥哥头像（这里用内置女生学姐头像 🧑‍🎓 替换，也可以放图片链接），浅蓝色背景
         with st.chat_message("assistant", avatar="🧑‍🎓"):
             st.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{message["content"]}</div>', unsafe_allow_html=True)
 
@@ -173,7 +211,6 @@ if user_input:
                 content = chunk.choices[0].delta.content
                 if content:
                     full_response += content
-                    # 动态渲染流式输出
                     response_placeholder.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{full_response}▌</div>', unsafe_allow_html=True)
             
             response_placeholder.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{full_response}</div>', unsafe_allow_html=True)
