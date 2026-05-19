@@ -8,53 +8,23 @@ import datetime
 # =========================================================
 # 【安全防护区】 - 杜绝密钥泄露、控制访问时效
 # =========================================================
-# 1. 密钥防护：通过 st.secrets 读取云端环境变量，本地运行时可在 .streamlit/secrets.toml 中配置
 PRIVATE_API_KEY = st.secrets.get("API_KEY")
 PRIVATE_API_BASE = st.secrets.get("API_BASE")
 
-# 2. 时效控制：设置二维码/网页的过期时间
+# 时效控制：设置二维码/网页的过期时间
 EXPIRE_DATE = datetime.date(2026, 5, 28)
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（融入量子动态背景与气泡动效） ---
+# --- 页面基本配置与高级 UI 定制（浅蓝渐变与气泡淡入动效） ---
 # =========================================================
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon="⚛️", layout="centered")
 
-# 通过高级 CSS 在聊天背景中注入动态流动的物理粒子网络，并保留气泡平滑动效
+# 通过 CSS 深度定制视觉交互，保留气泡平滑上升淡入，背景为纯净渐变色
 st.markdown("""
     <style>
-    /* 全局背景：浅蓝渐变 + 动态物理波形粒子动效 */
+    /* 全局浅蓝色渐变静止背景 */
     .stApp {
         background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    /* 使用 CSS 伪元素在背景中生成若隐若现的动态量子晶格流动动画 */
-    .stApp::before {
-        content: "";
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 0;
-        opacity: 0.25; /* 保持透明度，不遮挡文字，若隐若现非常高级 */
-        pointer-events: none;
-        background-image: 
-            radial-gradient(#0284c7 1px, transparent 0),
-            radial-gradient(#22c55e 1px, transparent 0);
-        background-size: 30px 30px;
-        background-position: 0 0, 15px 15px;
-        animation: quantumFloat 20s linear infinite; /* 20秒一轮的微动效果 */
-    }
-    
-    @keyframes quantumFloat {
-        0% { background-position: 0 0, 15px 15px; }
-        100% { background-position: 30px 60px, 45px 75px; }
-    }
-    
-    /* 确保主内容区在背景层之上，可正常交互 */
-    .main .block-container {
-        position: relative;
-        z-index: 1;
     }
     
     /* 聊天对话框容器自定义平滑淡入并向上飘入动画 */
@@ -101,12 +71,14 @@ if current_date > EXPIRE_DATE:
 # --- 核心数据自动加载 ---
 GITHUB_LESSON_PLAN_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E6%95%99%E6%A1%88.docx"
 GITHUB_SPEECH_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E8%AE%B2%E7%A8%BF.docx"
+# 定义你的 GitHub 动态机器人 GIF 路径
+ROBOT_GIF_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/robot.gif"
 
 lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
 speech_content = fetch_and_extract_docx(GITHUB_SPEECH_URL)
 
 # =========================================================
-# --- 侧边栏控制台还原（彻底去掉倒计时和报错机器人，保留干净的模型配置） ---
+# --- 侧边栏控制台还原（纯净干净的模型配置） ---
 # =========================================================
 with st.sidebar:
     st.title("⚛️ 助教控制台")
@@ -164,7 +136,7 @@ SYSTEM_PROMPT = f"""
 1. “基础研究是整个科学体系的源头，是所有技术问题的总机关。要以更大力度、更实举措加强基础研究，提升我国原始创新能力，进一步打牢科技强国建设根基。”——2026年4月30日，习近平总书记在加强基础研究座谈会重要讲话
 2. 青年科技人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 月 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
 3. 加快实现高水平科技自立自强，是推动高质量发展的必由之路。在激烈的国际竞争中，我们要开辟发展新领域新赛道、塑造发展新动能新优势，从根本上说，还是要依靠科技创新——2024 年 3 月 5 日，习近平总书记参加十四届全国人大二次会议江苏代表团审议时的重要讲话
-4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平关两院院士大会、中国科协第十次全国代表大会上的重要讲话
+4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
 6. 教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
 7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四届全国人大三次会议江苏代表团审议时的重要讲话
@@ -178,7 +150,8 @@ for message in st.session_state.messages:
         with st.chat_message("user", avatar="🎓"):
             st.markdown(f'<div style="background-color:#1e3a8a; color:white; padding:12px; border-radius:12px;">{message["content"]}</div>', unsafe_allow_html=True)
     else:
-        with st.chat_message("assistant", avatar="🧑‍🎓"):
+        # 【关键改动】将助教历史记录的静态头像替换为你的机器人 GIF 直链
+        with st.chat_message("assistant", avatar=ROBOT_GIF_URL):
             st.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{message["content"]}</div>', unsafe_allow_html=True)
 
 # --- 交互输入逻辑 ---
@@ -192,7 +165,8 @@ if user_input:
     try:
         client = OpenAI(api_key=PRIVATE_API_KEY, base_url=PRIVATE_API_BASE)
         
-        with st.chat_message("assistant", avatar="🧑‍🎓"):
+        # 【关键改动】将实时对话生成时助教的头像也替换为机器人 GIF 直链
+        with st.chat_message("assistant", avatar=ROBOT_GIF_URL):
             response_placeholder = st.empty()
             full_response = ""
             
