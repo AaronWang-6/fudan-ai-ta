@@ -25,11 +25,10 @@ ROBOT_GIF_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.gif?
 ROBOT_PNG_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.png?raw=true"
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（穿透壳层强放128px头像与更换标签） ---
+# --- 页面基本配置与高级 UI 定制（纯净简练版 CSS） ---
 # =========================================================
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon=ROBOT_PNG_URL, layout="centered")
 
-# 通过纯文本 CSS 深度定制视觉交互，严防 f-string 语法冲突
 st.markdown("""
     <style>
     /* 全局浅蓝色渐变静止背景 */
@@ -52,35 +51,6 @@ st.markdown("""
             opacity: 1;
             transform: translateY(0);
         }
-    }
-    
-    /* 🎯 【核心超强放大】解除外壳限制，强行将整个头像骨架及所有底层层级撑大至 128px */
-    div[data-testid="stChatMessageAvatar"],
-    div[data-testid="stChatMessageAvatar"] > div,
-    div[data-testid="stChatMessageAvatar"] img {
-        width: 128px !important;
-        height: 128px !important;
-        min-width: 128px !important;
-        min-height: 128px !important;
-        max-width: 128px !important;
-        max-height: 128px !important;
-        border-radius: 50% !important; /* 保持圆形 */
-        object-fit: cover !important;  /* 确保 GIF 等比例填充不缩水 */
-    }
-    
-    /* 让用户原生的帽子符号（🎓）在 128px 的大容器中完美居中并等比例放大 */
-    div[data-testid="stChatMessageAvatar"] span {
-        font-size: 80px !important;
-        line-height: 128px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    /* ⚠️【防重叠修正】头像扩大到 128px 后，大幅增加左侧外边距，并将文字气泡略微下移居中 */
-    div[data-testid="stChatMessageContent"] {
-        margin-left: 35px !important;
-        padding-top: 24px !important;
     }
     
     /* 隐藏不必要的 Streamlit 默认页脚 */
@@ -112,7 +82,7 @@ lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
 speech_content = fetch_and_extract_docx(GITHUB_SPEECH_URL)
 
 # =========================================================
-# --- 侧边栏控制台（彻底回归最纯净清爽的模型配置区） ---
+# --- 侧边栏控制台 ---
 # =========================================================
 with st.sidebar:
     st.title("⚛️ 助教控制台")
@@ -145,7 +115,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # =========================================================
-# --- 主界面交互布局（标题图标完美替换为 robot.png） ---
+# --- 主界面交互布局 ---
 # =========================================================
 col1, col2 = st.columns([0.12, 0.88], vertical_alignment="center")
 with col1:
@@ -155,7 +125,7 @@ with col2:
 
 st.markdown("“同学们，在坐热‘冷板凳’的路上，我一直都在。”")
 
-# --- 核心系统提示词（严格遵守守界原则，融合教案与讲稿与总书记讲话） ---
+# --- 核心系统提示词 ---
 SYSTEM_PROMPT = f"""
 你是一个名为“科研启航小助手”的AI，专门为复旦大学物理学系《筑基高水平科技自立自强，勇坐基础研究“冷板凳”》主题班会提供服务。
 你的角色是：一位懂物理系学生困境、有同理心、充满鼓励的助教。
@@ -175,24 +145,34 @@ SYSTEM_PROMPT = f"""
 
 【习近平总书记的讲话】：
 1. “基础研究是整个科学体系的源头，是所有技术问题的总机关。要以更大力度、更实举措加强基础研究，提升我国原始创新能力，进一步打牢科技强国建设根基。”——2026年4月30日，习近平总书记在加强基础研究座谈会重要讲话
-2. 青年科技人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 January 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
+2. 青年科技人才是国家战略人才力量的源头活水，要放手使用优秀青年科技人才，让他们挑大梁、当主角，在科技创新的实践中成长成才——2025 年 1 月 16 日，习近平总书记在全国科技大会、国家科学技术奖励大会上的重要讲话
 3. 加快实现高水平科技自立自强，是推动高质量发展的必由之路。在激烈的国际竞争中，我们要开辟发展新领域新赛道、塑造发展新动能新优势，从根本上说，还是要依靠科技创新——2024 年 3 月 5 日，习近平总书记参加十四届全国人大二次会议江苏代表团审议时的重要讲话
 4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
-6. 教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
-7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四届全国人大三次会议江苏代表团审议时的重要讲话
+6. 教育、科技、人保留是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
+7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四姐全国人大三次会议江苏代表团审议时的重要讲话
 8. 习近平总书记在二十届中央政治局第三次集体学习时强调：“加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路。”
 =========================================
 """
 
-# 渲染历史对话（使用放大后的自定义皮肤与大号专属图标）
+# 渲染历史对话
 for message in st.session_state.messages:
     if message["role"] == "user":
         with st.chat_message("user", avatar="🎓"):
             st.markdown(f'<div style="background-color:#1e3a8a; color:white; padding:12px; border-radius:12px;">{message["content"]}</div>', unsafe_allow_html=True)
     else:
-        with st.chat_message("assistant", avatar=ROBOT_GIF_URL):
-            st.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{message["content"]}</div>', unsafe_allow_html=True)
+        # 【降维打击修改】隐藏Streamlit官方不听话的头像，改在HTML气泡内部上方直接渲染128px的超大动态机器人！
+        with st.chat_message("assistant", avatar=None):
+            html_content = f"""
+            <div style="background-color:#bae6fd; color:#0f172a; padding:16px; border-radius:12px; border: 1px solid #7dd3fc;">
+                <div style="margin-bottom: 12px; display: flex; align-items: center;">
+                    <img src="{ROBOT_GIF_URL}" style="width:128px; height:128px; border-radius:50%; object-fit:cover; margin-right:12px;">
+                    <span style="font-weight:bold; color:#0384c7; font-size:16px;">AI助教学长：</span>
+                </div>
+                <div>{message["content"]}</div>
+            </div>
+            """
+            st.markdown(html_content, unsafe_allow_html=True)
 
 # --- 交互输入逻辑 ---
 user_input = st.chat_input("关于科研方向、毕业焦虑或班会任务，尽管和我说...")
@@ -205,7 +185,7 @@ if user_input:
     try:
         client = OpenAI(api_key=PRIVATE_API_KEY, base_url=PRIVATE_API_BASE)
         
-        with st.chat_message("assistant", avatar=ROBOT_GIF_URL):
+        with st.chat_message("assistant", avatar=None):
             response_placeholder = st.empty()
             full_response = ""
             
@@ -224,9 +204,29 @@ if user_input:
                 content = chunk.choices[0].delta.content
                 if content:
                     full_response += content
-                    response_placeholder.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{full_response}▌</div>', unsafe_allow_html=True)
+                    # 流式渲染时，同步完美展示128px超大GIF机器人
+                    dynamic_html = f"""
+                    <div style="background-color:#bae6fd; color:#0f172a; padding:16px; border-radius:12px; border: 1px solid #7dd3fc;">
+                        <div style="margin-bottom: 12px; display: flex; align-items: center;">
+                            <img src="{ROBOT_GIF_URL}" style="width:128px; height:128px; border-radius:50%; object-fit:cover; margin-right:12px;">
+                            <span style="font-weight:bold; color:#0384c7; font-size:16px;">AI助教学长正在思考回答...</span>
+                        </div>
+                        <div>{full_response}▌</div>
+                    </div>
+                    """
+                    response_placeholder.markdown(dynamic_html, unsafe_allow_html=True)
             
-            response_placeholder.markdown(f'<div style="background-color:#bae6fd; color:#0f172a; padding:12px; border-radius:12px; border: 1px solid #7dd3fc;">{full_response}</div>', unsafe_allow_html=True)
+            # 回答完毕后的最终固定样式
+            final_html = f"""
+            <div style="background-color:#bae6fd; color:#0f172a; padding:16px; border-radius:12px; border: 1px solid #7dd3fc;">
+                <div style="margin-bottom: 12px; display: flex; align-items: center;">
+                    <img src="{ROBOT_GIF_URL}" style="width:128px; height:128px; border-radius:50%; object-fit:cover; margin-right:12px;">
+                    <span style="font-weight:bold; color:#0384c7; font-size:16px;">AI助教学长：</span>
+                </div>
+                <div>{full_response}</div>
+            </div>
+            """
+            response_placeholder.markdown(final_html, unsafe_allow_html=True)
         
         st.session_state.messages.append({"role": "assistant", "content": full_response})
 
