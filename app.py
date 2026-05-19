@@ -72,7 +72,7 @@ if current_date > EXPIRE_DATE:
 GITHUB_LESSON_PLAN_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E6%95%99%E6%A1%88.docx"
 GITHUB_SPEECH_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/%E8%AE%B2%E7%A8%BF.docx"
 # 定义你的 GitHub 动态机器人 GIF 路径
-ROBOT_GIF_URL = "https://raw.githubusercontent.com/AaronWang-6/fudan-ai-ta/main/robot.gif"
+ROBOT_GIF_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.gif"
 
 lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
 speech_content = fetch_and_extract_docx(GITHUB_SPEECH_URL)
