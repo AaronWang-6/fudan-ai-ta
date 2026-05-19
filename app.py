@@ -25,12 +25,11 @@ ROBOT_GIF_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.gif?
 ROBOT_PNG_URL = "https://github.com/AaronWang-6/fudan-ai-ta/blob/main/robot.png?raw=true"
 
 # =========================================================
-# --- 页面基本配置与高级 UI 定制（放大头像与修改标签图标） ---
+# --- 页面基本配置与高级 UI 定制（最强 CSS 穿透头像放大） ---
 # =========================================================
-# 【关键修改】将原本的 ⚛️ 替换为你指定的 robot.png 公开直链
 st.set_page_config(page_title="物理学系科研启航小助手", page_icon=ROBOT_PNG_URL, layout="centered")
 
-# 通过 CSS 强行注入，重写 Streamlit 底层头像的大小限制
+# 终极强行修改：直接抓取聊天框内所有的圆形/方形头像，强制撑大两倍
 st.markdown(f"""
     <style>
     /* 全局浅蓝色渐变静止背景 */
@@ -55,21 +54,26 @@ st.markdown(f"""
         }}
     }}
     
-    /* 核心重写：突破默认限制，将对话框头像放大 2 倍并修正边距 */
-    div[data-testid="stChatMessageAvatar"] {{
+    /* 🛠️ 【终极强推】无视所有包装层，直接将聊天对话框头像放大至 64px (2倍) */
+    [data-testid="stChatMessage"] [data-testid="stElementContainer"] img,
+    [data-testid="stChatMessage"] svg,
+    [data-testid="stChatMessage"] p {{
         width: 64px !important;
         height: 64px !important;
-    }}
-    div[data-testid="stChatMessageAvatar"] img, 
-    div[data-testid="stChatMessageAvatar"] div {{
-        width: 64px !important;
-        height: 64px !important;
-        font-size: 32px !important; /* 顺便放大用户原生的帽子符号大小 */
+        min-width: 64px !important;
+        min-height: 64px !important;
     }}
     
-    /* 适当拉开左侧头像与右侧对话框的间距，防止重叠 */
+    /* 让用户原生的帽子符号（🎓）在撑大的容器中按比例放大 */
+    [data-testid="stChatMessage"] span {{
+        font-size: 40px !important;
+        line-height: 64px !important;
+    }
+    
+    /* 优化间距：拉开左侧大头像和右侧文字对话框的距离，严防重叠 */
     div[data-testid="stChatMessageContent"] {{
-        margin-left: 10px !important;
+        margin-left: 18px !important;
+        padding-top: 4px !important;
     }}
     
     /* 隐藏不必要的 Streamlit 默认页脚 */
@@ -132,8 +136,16 @@ with st.sidebar:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# --- 主界面交互布局 ---
-st.title("⚛️ 物理学系“科研启航”小助手")
+# =========================================================
+# --- 主界面交互布局（标题图标完美替换） ---
+# =========================================================
+# 【关键优化】通过并排分列组件，将原本的纯文本 ⚛️ 替换为精美的 robot.png 物理图标图片
+col1, col2 = st.columns([0.12, 0.88], vertical_alignment="center")
+with col1:
+    st.image(ROBOT_PNG_URL, use_container_width=True)
+with col2:
+    st.title("物理学系“科研启航”小助手")
+
 st.markdown("“同学们，在坐热‘冷板凳’的路上，我一直都在。”")
 
 # --- 核心系统提示词（严格遵守守界原则，融合教案与讲稿与总书记讲话） ---
@@ -160,7 +172,7 @@ SYSTEM_PROMPT = f"""
 3. 加快实现高水平科技自立自强，是推动高质量发展的必由之路。在激烈的国际竞争中，我们要开辟发展新领域新赛道、塑造发展新动能新优势，从根本上说，还是要依靠科技创新——2024 年 3 月 5 日，习近平总书记参加十四届全国人大二次会议江苏代表团审议时的重要讲话
 4. 加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路，要从源头和底层解决关键技术问题——2024 年 6 月 24 日，习近平总书记在两院院士大会、中国科协第十次全国代表大会上的重要讲话
 5. 人工智能是引领新一轮科技革命和产业变革的战略性技术，具有溢出带动性很强的 “头雁” 效应，要推动人工智能赋能千行百业——2024 年 10 月 24 日，习近平总书记在中共中央政治局第十八次集体学习时的重要讲话
-6. 教育、科技、人保留是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
+6. 教育、科技、人才是全面建设社会主义现代化国家的基础性、战略性支撑，要一体推进教育科技人才事业发展，构筑人才竞争优势——2024 年 9 月 10 日，习近平总书记在全国教育大会上的重要讲话
 7. 要以科技创新推动产业创新，加快形成新质生产力，不断塑造发展新动能新优势，把科技成果转化为现实生产力。——2025 年 3 月 5 日，习近平总书记参加十四届全国人大三次会议江苏代表团审议时的重要讲话
 8. 习近平总书记在二十届中央政治局第三次集体学习时强调：“加强基础研究，是实现高水平科技自立自强的迫切要求，是建设世界科技强国的必由之路。”
 =========================================
