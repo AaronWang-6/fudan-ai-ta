@@ -59,9 +59,8 @@ if current_date > EXPIRE_DATE:
 
 # --- 核心数据自动加载 ---
 # TODO: 请在部署到 GitHub 后，将下方的链接替换为你自己仓库的 Raw 原始文件下载链接
-# 格式通常为: https://raw.githubusercontent.com/你的用户名/仓库名/main/文件名.docx
-GITHUB_LESSON_PLAN_URL = "https://github.com/AaronWang-6/fudan-ai-ta/raw/refs/heads/main/%E6%95%99%E6%A1%88.docx"
-GITHUB_SPEECH_URL = "https://github.com/AaronWang-6/fudan-ai-ta/raw/refs/heads/main/%E8%AE%B2%E7%A8%BF.docx"
+GITHUB_LESSON_PLAN_URL = "https://github.com/AaronWang-6/fudan-ai-ta/raw/refs/heads/main/%E6%95%99%E6%A1%88.docx?raw=true"
+GITHUB_SPEECH_URL = "https://github.com/AaronWang-6/fudan-ai-ta/raw/refs/heads/main/%E8%AE%B2%E7%A8%BF.docx?raw=true"
 
 # 临时模拟：如果远程下载不通，助教将使用内置的核心提示词兜底
 lesson_plan_content = fetch_and_extract_docx(GITHUB_LESSON_PLAN_URL)
