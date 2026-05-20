@@ -161,7 +161,6 @@ for message in st.session_state.messages:
         with st.chat_message("user", avatar="🎓"):
             st.markdown(f'<div style="background-color:#1e3a8a; color:white; padding:12px; border-radius:12px;">{message["content"]}</div>', unsafe_allow_html=True)
     else:
-        # 【降维打击修改】隐藏Streamlit官方不听话的头像，改在HTML气泡内部上方直接渲染128px的超大动态机器人！
         with st.chat_message("assistant", avatar=None):
             html_content = f"""
             <div style="background-color:#bae6fd; color:#0f172a; padding:16px; border-radius:12px; border: 1px solid #7dd3fc;">
@@ -201,10 +200,14 @@ if user_input:
             )
             
             for chunk in completion:
+                # 🎯 核心防越界保护：如果 GPT-4o 吐出结束标志的空块，直接跳过，防止底层崩溃
+                if not chunk.choices:
+                    continue
+                
                 content = chunk.choices[0].delta.content
                 if content:
                     full_response += content
-                    # 流式渲染时，同步完美展示128px超大GIF机器人
+                    # 流式渲染时，同步完美展示 128px 超大 GIF 机器人
                     dynamic_html = f"""
                     <div style="background-color:#bae6fd; color:#0f172a; padding:16px; border-radius:12px; border: 1px solid #7dd3fc;">
                         <div style="margin-bottom: 12px; display: flex; align-items: center;">
